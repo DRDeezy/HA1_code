@@ -1,0 +1,554 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\Meilis\Desktop\Peres_HA1\log_HA.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}13 Apr 2021, 20:36:33
+
+{com}. do "C:\Users\Meilis\AppData\Local\Temp\STD2d7c_000000.tmp"
+{txt}
+{com}. * HA1
+.  * Reading Stata (.dta) file
+. clear all 
+{res}{txt}
+{com}.  
+. use choice.dta.sec, clear 
+{txt}
+{com}. 
+. set more off
+{txt}
+{com}. 
+. * Generate a dummy variable equal to 0 for school=1 and equal to 0 o/w 
+. generate school=1 if at16==1
+{txt}(2,351 missing values generated)
+
+{com}. replace school=0 if at16==2
+{txt}(1,042 real changes made)
+
+{com}. replace school=0 if at16==3
+{txt}(1,309 real changes made)
+
+{com}. 
+. *summary of all statistics
+. summarize
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 11}n {c |}{res}      3,423        3423    1976.559          1       6845
+{txt}{space 8}at16 {c |}{res}      3,423    2.069238    .8312621          1          3
+{txt}{space 7}able7 {c |}{res}      3,423    73.93441    20.44682          5        100
+{txt}{space 6}loginc {c |}{res}      3,423    3.863004    .3924542   .9162908   5.105946
+{txt}{space 5}ctratio {c |}{res}      3,423    17.11922    1.973063        4.8   35.28571
+{txt}{hline 13}{c +}{hline 57}
+{space 6}oldsib {c |}{res}      3,423    .4271107    .6422592          0          8
+{txt}{space 6}yngsib {c |}{res}      3,423    1.203623     1.24346          0          9
+{txt}{space 8}etot {c |}{res}      3,423    6.127666    3.346675          0         22
+{txt}{space 6}female {c |}{res}      3,423    .4995618    .5000729          0          1
+{txt}{space 6}school {c |}{res}      3,423    .3131756    .4638529          0          1
+{txt}
+{com}. *summary by school choice (расставляет данные по категориям также)
+. *bysort school: sum
+. 
+. *table of correlations for all variables// star(*) - sign level to display with a star
+. pwcorr at16 able7 loginc ctratio oldsib yngsib etot female school, star(0.01) 
+
+             {txt}{c |}     at16    able7   loginc  ctratio   oldsib   yngsib     etot
+{hline 13}{c +}{hline 63}
+        at16 {c |} {res}  1.0000 
+       {txt}able7 {c |} {res} -0.3827*  1.0000 
+      {txt}loginc {c |} {res} -0.1855*  0.1422*  1.0000 
+     {txt}ctratio {c |} {res}  0.1775* -0.0839* -0.1135*  1.0000 
+      {txt}oldsib {c |} {res}  0.1181* -0.0972*  0.0780* -0.0034   1.0000 
+      {txt}yngsib {c |} {res}  0.1026* -0.1128* -0.0223   0.0138   0.0433   1.0000 
+        {txt}etot {c |} {res} -0.4130*  0.4612*  0.1475* -0.0633* -0.1320* -0.1269*  1.0000 
+      {txt}female {c |} {res}  0.0953*  0.0775* -0.0043   0.0471* -0.0031  -0.0086   0.0295 
+      {txt}school {c |} {res} -0.8687*  0.3635*  0.1744* -0.2164* -0.0970* -0.0731*  0.3705*
+
+             {txt}{c |}   female   school
+{hline 13}{c +}{hline 18}
+      female {c |} {res}  1.0000 
+      {txt}school {c |} {res}  0.0056   1.0000 
+{txt}
+{com}. 
+. **************************** LOGIT 
+. logit school able7 etot ctratio loginc female oldsib yngsib
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-2127.7983}  
+Iteration 1:{space 3}log likelihood = {res:-1683.5813}  
+Iteration 2:{space 3}log likelihood = {res:-1646.1019}  
+Iteration 3:{space 3}log likelihood = {res:-1645.6348}  
+Iteration 4:{space 3}log likelihood = {res:-1645.6347}  
+{res}
+{txt}Logistic regression{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 49}LR chi2({res}7{txt}){col 67}= {res}    964.33
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-1645.6347{txt}{col 49}Pseudo R2{col 67}= {res}    0.2266
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      school{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}able7 {c |}{col 14}{res}{space 2} .0407739{col 26}{space 2} .0031581{col 37}{space 1}   12.91{col 46}{space 3}0.000{col 54}{space 4} .0345842{col 67}{space 3} .0469636
+{txt}{space 8}etot {c |}{col 14}{res}{space 2}  .221943{col 26}{space 2} .0170205{col 37}{space 1}   13.04{col 46}{space 3}0.000{col 54}{space 4} .1885835{col 67}{space 3} .2553026
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2}-.2428075{col 26}{space 2} .0241752{col 37}{space 1}  -10.04{col 46}{space 3}0.000{col 54}{space 4}-.2901901{col 67}{space 3}-.1954249
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2} .6760199{col 26}{space 2}   .11748{col 37}{space 1}    5.75{col 46}{space 3}0.000{col 54}{space 4} .4457633{col 67}{space 3} .9062765
+{txt}{space 6}female {c |}{col 14}{res}{space 2}-.0590708{col 26}{space 2} .0858011{col 37}{space 1}   -0.69{col 46}{space 3}0.491{col 54}{space 4}-.2272378{col 67}{space 3} .1090963
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2}-.2935737{col 26}{space 2} .0743979{col 37}{space 1}   -3.95{col 46}{space 3}0.000{col 54}{space 4}-.4393908{col 67}{space 3}-.1477566
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2}-.0634156{col 26}{space 2} .0379222{col 37}{space 1}   -1.67{col 46}{space 3}0.094{col 54}{space 4}-.1377418{col 67}{space 3} .0109106
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-3.795431{col 26}{space 2} .6840002{col 37}{space 1}   -5.55{col 46}{space 3}0.000{col 54}{space 4}-5.136047{col 67}{space 3}-2.454816
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. **************************** ORDERED LOGIT 
+. ologit at16 able7 etot ctratio loginc female oldsib yngsib
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-3742.1932}  
+Iteration 1:{space 3}log likelihood = {res: -3216.888}  
+Iteration 2:{space 3}log likelihood = {res:-3212.3616}  
+Iteration 3:{space 3}log likelihood = {res:-3212.3484}  
+Iteration 4:{space 3}log likelihood = {res:-3212.3484}  
+{res}
+{txt}Ordered logistic regression{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 49}LR chi2({res}7{txt}){col 67}= {res}   1059.69
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-3212.3484{txt}{col 49}Pseudo R2{col 67}= {res}    0.1416
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        at16{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}able7 {c |}{col 14}{res}{space 2}-.0262445{col 26}{space 2} .0019909{col 37}{space 1}  -13.18{col 46}{space 3}0.000{col 54}{space 4}-.0301466{col 67}{space 3}-.0223424
+{txt}{space 8}etot {c |}{col 14}{res}{space 2}-.1878267{col 26}{space 2} .0121532{col 37}{space 1}  -15.45{col 46}{space 3}0.000{col 54}{space 4}-.2116465{col 67}{space 3}-.1640069
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2} .1399681{col 26}{space 2} .0181842{col 37}{space 1}    7.70{col 46}{space 3}0.000{col 54}{space 4} .1043278{col 67}{space 3} .1756084
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2}-.6430468{col 26}{space 2} .0929624{col 37}{space 1}   -6.92{col 46}{space 3}0.000{col 54}{space 4}-.8252497{col 67}{space 3}-.4608439
+{txt}{space 6}female {c |}{col 14}{res}{space 2} .5831287{col 26}{space 2} .0687306{col 37}{space 1}    8.48{col 46}{space 3}0.000{col 54}{space 4} .4484191{col 67}{space 3} .7178382
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2} .2731451{col 26}{space 2} .0561998{col 37}{space 1}    4.86{col 46}{space 3}0.000{col 54}{space 4} .1629955{col 67}{space 3} .3832947
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2} .0827978{col 26}{space 2} .0283587{col 37}{space 1}    2.92{col 46}{space 3}0.004{col 54}{space 4} .0272157{col 67}{space 3} .1383799
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}/cut1 {c |}{col 14}{res}{space 2}-3.677982{col 26}{space 2} .5132702{col 54}{space 4}-4.683973{col 67}{space 3}-2.671991
+{txt}{space 7}/cut2 {c |}{col 14}{res}{space 2}-2.059902{col 26}{space 2} .5105434{col 54}{space 4}-3.060549{col 67}{space 3}-1.059255
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. *predict p1ologit p2ologit p3ologit, pr
+. *sum p1ologit p2ologit p3ologit at16
+. 
+. **************************** MULTINOMIAL LOGIT 
+. mlogit at16 able7 etot ctratio loginc female oldsib yngsib, baseoutcome(1)
+
+{res}{txt}Iteration 0:{space 3}log likelihood = {res:-3742.1932}  
+Iteration 1:{space 3}log likelihood = {res:-3129.1937}  
+Iteration 2:{space 3}log likelihood = {res:-3095.2628}  
+Iteration 3:{space 3}log likelihood = {res: -3094.592}  
+Iteration 4:{space 3}log likelihood = {res:-3094.5917}  
+{res}
+{txt}Multinomial logistic regression{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 49}LR chi2({res}14{txt}){col 67}= {res}   1295.20
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-3094.5917{txt}{col 49}Pseudo R2{col 67}= {res}    0.1731
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        at16{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}{res}1           {col 14}{txt}{c |}  (base outcome)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}2            {txt}{c |}
+{space 7}able7 {c |}{col 14}{res}{space 2}-.0356213{col 26}{space 2}  .003371{col 37}{space 1}  -10.57{col 46}{space 3}0.000{col 54}{space 4}-.0422284{col 67}{space 3}-.0290143
+{txt}{space 8}etot {c |}{col 14}{res}{space 2}-.1639989{col 26}{space 2} .0185088{col 37}{space 1}   -8.86{col 46}{space 3}0.000{col 54}{space 4}-.2002755{col 67}{space 3}-.1277222
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2} .2646188{col 26}{space 2} .0267889{col 37}{space 1}    9.88{col 46}{space 3}0.000{col 54}{space 4} .2121136{col 67}{space 3}  .317124
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2}-.5021992{col 26}{space 2} .1303891{col 37}{space 1}   -3.85{col 46}{space 3}0.000{col 54}{space 4}-.7577571{col 67}{space 3}-.2466412
+{txt}{space 6}female {c |}{col 14}{res}{space 2}-.4777364{col 26}{space 2} .0964582{col 37}{space 1}   -4.95{col 46}{space 3}0.000{col 54}{space 4}-.6667911{col 67}{space 3}-.2886817
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2} .2004344{col 26}{space 2} .0822906{col 37}{space 1}    2.44{col 46}{space 3}0.015{col 54}{space 4} .0391478{col 67}{space 3}  .361721
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2} .0098272{col 26}{space 2}  .042069{col 37}{space 1}    0.23{col 46}{space 3}0.815{col 54}{space 4}-.0726265{col 67}{space 3} .0922809
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 1.581615{col 26}{space 2} .7578253{col 37}{space 1}    2.09{col 46}{space 3}0.037{col 54}{space 4} .0963044{col 67}{space 3} 3.066925
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}3            {txt}{c |}
+{space 7}able7 {c |}{col 14}{res}{space 2}-.0458001{col 26}{space 2} .0033899{col 37}{space 1}  -13.51{col 46}{space 3}0.000{col 54}{space 4}-.0524442{col 67}{space 3} -.039156
+{txt}{space 8}etot {c |}{col 14}{res}{space 2}-.2834205{col 26}{space 2} .0188429{col 37}{space 1}  -15.04{col 46}{space 3}0.000{col 54}{space 4} -.320352{col 67}{space 3}-.2464891
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2} .2190832{col 26}{space 2} .0270961{col 37}{space 1}    8.09{col 46}{space 3}0.000{col 54}{space 4} .1659758{col 67}{space 3} .2721907
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2}-.8566635{col 26}{space 2} .1324562{col 37}{space 1}   -6.47{col 46}{space 3}0.000{col 54}{space 4}-1.116273{col 67}{space 3}-.5970542
+{txt}{space 6}female {c |}{col 14}{res}{space 2} .6855444{col 26}{space 2} .1003293{col 37}{space 1}    6.83{col 46}{space 3}0.000{col 54}{space 4} .4889026{col 67}{space 3} .8821862
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2} .3872867{col 26}{space 2} .0821514{col 37}{space 1}    4.71{col 46}{space 3}0.000{col 54}{space 4} .2262729{col 67}{space 3} .5483004
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2} .1175955{col 26}{space 2} .0419124{col 37}{space 1}    2.81{col 46}{space 3}0.005{col 54}{space 4} .0354487{col 67}{space 3} .1997422
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 4.527754{col 26}{space 2} .7621359{col 37}{space 1}    5.94{col 46}{space 3}0.000{col 54}{space 4} 3.033995{col 67}{space 3} 6.021513
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. **************************** Marginal Effects
+. *LOGIT
+. logit school able7 etot ctratio loginc female oldsib yngsib, nolog
+{res}
+{txt}Logistic regression{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 49}LR chi2({res}7{txt}){col 67}= {res}    964.33
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-1645.6347{txt}{col 49}Pseudo R2{col 67}= {res}    0.2266
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      school{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}able7 {c |}{col 14}{res}{space 2} .0407739{col 26}{space 2} .0031581{col 37}{space 1}   12.91{col 46}{space 3}0.000{col 54}{space 4} .0345842{col 67}{space 3} .0469636
+{txt}{space 8}etot {c |}{col 14}{res}{space 2}  .221943{col 26}{space 2} .0170205{col 37}{space 1}   13.04{col 46}{space 3}0.000{col 54}{space 4} .1885835{col 67}{space 3} .2553026
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2}-.2428075{col 26}{space 2} .0241752{col 37}{space 1}  -10.04{col 46}{space 3}0.000{col 54}{space 4}-.2901901{col 67}{space 3}-.1954249
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2} .6760199{col 26}{space 2}   .11748{col 37}{space 1}    5.75{col 46}{space 3}0.000{col 54}{space 4} .4457633{col 67}{space 3} .9062765
+{txt}{space 6}female {c |}{col 14}{res}{space 2}-.0590708{col 26}{space 2} .0858011{col 37}{space 1}   -0.69{col 46}{space 3}0.491{col 54}{space 4}-.2272378{col 67}{space 3} .1090963
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2}-.2935737{col 26}{space 2} .0743979{col 37}{space 1}   -3.95{col 46}{space 3}0.000{col 54}{space 4}-.4393908{col 67}{space 3}-.1477566
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2}-.0634156{col 26}{space 2} .0379222{col 37}{space 1}   -1.67{col 46}{space 3}0.094{col 54}{space 4}-.1377418{col 67}{space 3} .0109106
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-3.795431{col 26}{space 2} .6840002{col 37}{space 1}   -5.55{col 46}{space 3}0.000{col 54}{space 4}-5.136047{col 67}{space 3}-2.454816
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. *marginal effect
+. margins, dydx(loginc) at(able7=75 etot=7 ctratio=12 loginc=3 female=1 oldsib=0 yngsib=0)
+{res}
+{txt}Conditional marginal effects{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 1}Model VCE{col 14}: {res}OIM
+
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:Expression}:{space 1}{res:Pr(school), predict()}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:dy/dx w.r.t.}:{space 1}{res:loginc}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:at}:{space 1}{res:{txt:able7}{space 11}{txt:=} {space 9}75}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:etot}{space 12}{txt:=} {space 10}7}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:ctratio}{space 9}{txt:=} {space 9}12}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:loginc}{space 10}{txt:=} {space 10}3}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:female}{space 10}{txt:=} {space 10}1}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:oldsib}{space 10}{txt:=} {space 10}0}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:yngsib}{space 10}{txt:=} {space 10}0}{p_end}
+{p2colreset}{...}
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26} Delta-method
+{col 14}{c |}      dy/dx{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}loginc {c |}{col 14}{res}{space 2} .1683094{col 26}{space 2} .0280728{col 37}{space 1}    6.00{col 46}{space 3}0.000{col 54}{space 4} .1132877{col 67}{space 3}  .223331
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *OLOGIT
+. ologit at16 able7 etot ctratio loginc female oldsib yngsib, nolog
+{res}
+{txt}Ordered logistic regression{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 49}LR chi2({res}7{txt}){col 67}= {res}   1059.69
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-3212.3484{txt}{col 49}Pseudo R2{col 67}= {res}    0.1416
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        at16{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}able7 {c |}{col 14}{res}{space 2}-.0262445{col 26}{space 2} .0019909{col 37}{space 1}  -13.18{col 46}{space 3}0.000{col 54}{space 4}-.0301466{col 67}{space 3}-.0223424
+{txt}{space 8}etot {c |}{col 14}{res}{space 2}-.1878267{col 26}{space 2} .0121532{col 37}{space 1}  -15.45{col 46}{space 3}0.000{col 54}{space 4}-.2116465{col 67}{space 3}-.1640069
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2} .1399681{col 26}{space 2} .0181842{col 37}{space 1}    7.70{col 46}{space 3}0.000{col 54}{space 4} .1043278{col 67}{space 3} .1756084
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2}-.6430468{col 26}{space 2} .0929624{col 37}{space 1}   -6.92{col 46}{space 3}0.000{col 54}{space 4}-.8252497{col 67}{space 3}-.4608439
+{txt}{space 6}female {c |}{col 14}{res}{space 2} .5831287{col 26}{space 2} .0687306{col 37}{space 1}    8.48{col 46}{space 3}0.000{col 54}{space 4} .4484191{col 67}{space 3} .7178382
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2} .2731451{col 26}{space 2} .0561998{col 37}{space 1}    4.86{col 46}{space 3}0.000{col 54}{space 4} .1629955{col 67}{space 3} .3832947
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2} .0827978{col 26}{space 2} .0283587{col 37}{space 1}    2.92{col 46}{space 3}0.004{col 54}{space 4} .0272157{col 67}{space 3} .1383799
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}/cut1 {c |}{col 14}{res}{space 2}-3.677982{col 26}{space 2} .5132702{col 54}{space 4}-4.683973{col 67}{space 3}-2.671991
+{txt}{space 7}/cut2 {c |}{col 14}{res}{space 2}-2.059902{col 26}{space 2} .5105434{col 54}{space 4}-3.060549{col 67}{space 3}-1.059255
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. *marginal effect
+. margins, dydx(loginc) at(able7=75 etot=7 ctratio=12 loginc=3 female=1 oldsib=0 yngsib=0)
+{res}
+{txt}Conditional marginal effects{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 1}Model VCE{col 14}: {res}OIM
+
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:dy/dx w.r.t.}:{space 1}{res:loginc}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:1._predict}:{space 1}{res:Pr(at16==1), predict(pr outcome(1))}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:2._predict}:{space 1}{res:Pr(at16==2), predict(pr outcome(2))}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:3._predict}:{space 1}{res:Pr(at16==3), predict(pr outcome(3))}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:at}:{space 1}{res:{txt:able7}{space 11}{txt:=} {space 9}75}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:etot}{space 12}{txt:=} {space 10}7}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:ctratio}{space 9}{txt:=} {space 9}12}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:loginc}{space 10}{txt:=} {space 10}3}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:female}{space 10}{txt:=} {space 10}1}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:oldsib}{space 10}{txt:=} {space 10}0}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:yngsib}{space 10}{txt:=} {space 10}0}{p_end}
+{p2colreset}{...}
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26} Delta-method
+{col 14}{c |}      dy/dx{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}loginc       {txt}{c |}
+{space 4}_predict {c |}
+{space 10}1  {c |}{col 14}{res}{space 2}  .141188{col 26}{space 2}  .017027{col 37}{space 1}    8.29{col 46}{space 3}0.000{col 54}{space 4} .1078156{col 67}{space 3} .1745603
+{txt}{space 10}2  {c |}{col 14}{res}{space 2}-.0084644{col 26}{space 2} .0143267{col 37}{space 1}   -0.59{col 46}{space 3}0.555{col 54}{space 4}-.0365442{col 67}{space 3} .0196153
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-.1327235{col 26}{space 2} .0247788{col 37}{space 1}   -5.36{col 46}{space 3}0.000{col 54}{space 4} -.181289{col 67}{space 3} -.084158
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. *MLOGIT
+. mlogit at16 able7 etot ctratio loginc female oldsib yngsib, baseoutcome(1) nolog
+{res}
+{txt}Multinomial logistic regression{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 49}LR chi2({res}14{txt}){col 67}= {res}   1295.20
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-3094.5917{txt}{col 49}Pseudo R2{col 67}= {res}    0.1731
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        at16{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}{res}1           {col 14}{txt}{c |}  (base outcome)
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}2            {txt}{c |}
+{space 7}able7 {c |}{col 14}{res}{space 2}-.0356213{col 26}{space 2}  .003371{col 37}{space 1}  -10.57{col 46}{space 3}0.000{col 54}{space 4}-.0422284{col 67}{space 3}-.0290143
+{txt}{space 8}etot {c |}{col 14}{res}{space 2}-.1639989{col 26}{space 2} .0185088{col 37}{space 1}   -8.86{col 46}{space 3}0.000{col 54}{space 4}-.2002755{col 67}{space 3}-.1277222
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2} .2646188{col 26}{space 2} .0267889{col 37}{space 1}    9.88{col 46}{space 3}0.000{col 54}{space 4} .2121136{col 67}{space 3}  .317124
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2}-.5021992{col 26}{space 2} .1303891{col 37}{space 1}   -3.85{col 46}{space 3}0.000{col 54}{space 4}-.7577571{col 67}{space 3}-.2466412
+{txt}{space 6}female {c |}{col 14}{res}{space 2}-.4777364{col 26}{space 2} .0964582{col 37}{space 1}   -4.95{col 46}{space 3}0.000{col 54}{space 4}-.6667911{col 67}{space 3}-.2886817
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2} .2004344{col 26}{space 2} .0822906{col 37}{space 1}    2.44{col 46}{space 3}0.015{col 54}{space 4} .0391478{col 67}{space 3}  .361721
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2} .0098272{col 26}{space 2}  .042069{col 37}{space 1}    0.23{col 46}{space 3}0.815{col 54}{space 4}-.0726265{col 67}{space 3} .0922809
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 1.581615{col 26}{space 2} .7578253{col 37}{space 1}    2.09{col 46}{space 3}0.037{col 54}{space 4} .0963044{col 67}{space 3} 3.066925
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}3            {txt}{c |}
+{space 7}able7 {c |}{col 14}{res}{space 2}-.0458001{col 26}{space 2} .0033899{col 37}{space 1}  -13.51{col 46}{space 3}0.000{col 54}{space 4}-.0524442{col 67}{space 3} -.039156
+{txt}{space 8}etot {c |}{col 14}{res}{space 2}-.2834205{col 26}{space 2} .0188429{col 37}{space 1}  -15.04{col 46}{space 3}0.000{col 54}{space 4} -.320352{col 67}{space 3}-.2464891
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2} .2190832{col 26}{space 2} .0270961{col 37}{space 1}    8.09{col 46}{space 3}0.000{col 54}{space 4} .1659758{col 67}{space 3} .2721907
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2}-.8566635{col 26}{space 2} .1324562{col 37}{space 1}   -6.47{col 46}{space 3}0.000{col 54}{space 4}-1.116273{col 67}{space 3}-.5970542
+{txt}{space 6}female {c |}{col 14}{res}{space 2} .6855444{col 26}{space 2} .1003293{col 37}{space 1}    6.83{col 46}{space 3}0.000{col 54}{space 4} .4889026{col 67}{space 3} .8821862
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2} .3872867{col 26}{space 2} .0821514{col 37}{space 1}    4.71{col 46}{space 3}0.000{col 54}{space 4} .2262729{col 67}{space 3} .5483004
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2} .1175955{col 26}{space 2} .0419124{col 37}{space 1}    2.81{col 46}{space 3}0.005{col 54}{space 4} .0354487{col 67}{space 3} .1997422
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} 4.527754{col 26}{space 2} .7621359{col 37}{space 1}    5.94{col 46}{space 3}0.000{col 54}{space 4} 3.033995{col 67}{space 3} 6.021513
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. *marginal effect at a representative value
+. margins, dydx(loginc) at(able7=75 etot=7 ctratio=12 loginc=3 female=1 oldsib=0 yngsib=0)
+{res}
+{txt}Conditional marginal effects{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 1}Model VCE{col 14}: {res}OIM
+
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:dy/dx w.r.t.}:{space 1}{res:loginc}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:1._predict}:{space 1}{res:Pr(at16==1), predict(pr outcome(1))}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:2._predict}:{space 1}{res:Pr(at16==2), predict(pr outcome(2))}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:3._predict}:{space 1}{res:Pr(at16==3), predict(pr outcome(3))}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col:at}:{space 1}{res:{txt:able7}{space 11}{txt:=} {space 9}75}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:etot}{space 12}{txt:=} {space 10}7}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:ctratio}{space 9}{txt:=} {space 9}12}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:loginc}{space 10}{txt:=} {space 10}3}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:female}{space 10}{txt:=} {space 10}1}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:oldsib}{space 10}{txt:=} {space 10}0}{p_end}
+{p2colreset}{...}
+{txt}{p2colset 1 14 16 2}{...}
+{p2col: }{space 2}{res:{txt:yngsib}{space 10}{txt:=} {space 10}0}{p_end}
+{p2colreset}{...}
+
+{res}{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26} Delta-method
+{col 14}{c |}      dy/dx{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}loginc       {txt}{c |}
+{space 4}_predict {c |}
+{space 10}1  {c |}{col 14}{res}{space 2} .1867848{col 26}{space 2} .0284745{col 37}{space 1}    6.56{col 46}{space 3}0.000{col 54}{space 4} .1309757{col 67}{space 3} .2425938
+{txt}{space 10}2  {c |}{col 14}{res}{space 2} -.014034{col 26}{space 2} .0153318{col 37}{space 1}   -0.92{col 46}{space 3}0.360{col 54}{space 4}-.0440838{col 67}{space 3} .0160158
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-.1727508{col 26}{space 2} .0306809{col 37}{space 1}   -5.63{col 46}{space 3}0.000{col 54}{space 4}-.2328842{col 67}{space 3}-.1126173
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. **************************** ALTERNATIVE MODELS
+. sum etot
+
+{txt}    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 8}etot {c |}{res}      3,423    6.127666    3.346675          0         22
+{txt}
+{com}. *Poisson
+. poisson etot able7 ctratio loginc female oldsib yngsib, vce(robust)
+{res}
+{txt}Iteration 0:{space 3}log pseudolikelihood = {res:-9160.3543}  
+Iteration 1:{space 3}log pseudolikelihood = {res:-9160.3384}  
+Iteration 2:{space 3}log pseudolikelihood = {res:-9160.3384}  
+{res}
+{txt}Poisson regression{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 49}Wald chi2({res}6{txt}){col 67}= {res}    706.47
+{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log pseudolikelihood = {res}-9160.3384{txt}{col 49}Pseudo R2{col 67}= {res}    0.0810
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}        etot{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}able7 {c |}{col 14}{res}{space 2} .0135574{col 26}{space 2} .0005898{col 37}{space 1}   22.99{col 46}{space 3}0.000{col 54}{space 4} .0124015{col 67}{space 3} .0147134
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2}-.0002732{col 26}{space 2} .0046705{col 37}{space 1}   -0.06{col 46}{space 3}0.953{col 54}{space 4}-.0094273{col 67}{space 3} .0088809
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2} .1298599{col 26}{space 2} .0219453{col 37}{space 1}    5.92{col 46}{space 3}0.000{col 54}{space 4} .0868479{col 67}{space 3}  .172872
+{txt}{space 6}female {c |}{col 14}{res}{space 2}-.0055216{col 26}{space 2} .0164955{col 37}{space 1}   -0.33{col 46}{space 3}0.738{col 54}{space 4}-.0378522{col 67}{space 3} .0268089
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2}-.0919501{col 26}{space 2} .0148624{col 37}{space 1}   -6.19{col 46}{space 3}0.000{col 54}{space 4}-.1210799{col 67}{space 3}-.0628204
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2} -.037848{col 26}{space 2} .0079937{col 37}{space 1}   -4.73{col 46}{space 3}0.000{col 54}{space 4}-.0535153{col 67}{space 3}-.0221807
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .3581841{col 26}{space 2}   .13645{col 37}{space 1}    2.63{col 46}{space 3}0.009{col 54}{space 4}  .090747{col 67}{space 3} .6256212
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. *margins, dydx(*)
+. *gives prediction for etot=1
+. *predict pp, pr(1) 
+. 
+. *Negative binomial 1
+. nbreg etot able7 ctratio loginc female oldsib yngsib, d(c)
+
+{txt}Fitting Poisson model:
+{res}
+{txt}Iteration 0:{space 3}log likelihood = {res:-9160.3543}  
+Iteration 1:{space 3}log likelihood = {res:-9160.3384}  
+Iteration 2:{space 3}log likelihood = {res:-9160.3384}  
+{res}
+{txt}Fitting constant-only model:
+{res}
+{txt}Iteration 0:{space 3}log likelihood = {res:-9417.0607}  
+Iteration 1:{space 3}log likelihood = {res: -9388.129}  
+Iteration 2:{space 3}log likelihood = {res:-9383.2486}  
+Iteration 3:{space 3}log likelihood = {res:-9383.2332}  
+Iteration 4:{space 3}log likelihood = {res:-9383.2332}  
+{res}
+{txt}Fitting full model:
+{res}
+{txt}Iteration 0:{space 3}log likelihood = {res:-9383.2332}  
+Iteration 1:{space 3}log likelihood = {res:-9090.9581}  (not concave)
+Iteration 2:{space 3}log likelihood = {res: -8971.562}  
+Iteration 3:{space 3}log likelihood = {res:-8872.4191}  
+Iteration 4:{space 3}log likelihood = {res:-8867.8288}  
+Iteration 5:{space 3}log likelihood = {res:-8867.7915}  
+Iteration 6:{space 3}log likelihood = {res:-8867.7915}  
+{res}
+{txt}Negative binomial regression{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 49}LR chi2({res}6{txt}){col 67}= {res}   1030.88
+{txt}{col 1}Dispersion{col 16}= {res}constant{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-8867.7915{txt}{col 49}Pseudo R2{col 67}= {res}    0.0549
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        etot{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}able7 {c |}{col 14}{res}{space 2}  .015365{col 26}{space 2} .0005731{col 37}{space 1}   26.81{col 46}{space 3}0.000{col 54}{space 4} .0142418{col 67}{space 3} .0164882
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2}-.0000129{col 26}{space 2}  .004867{col 37}{space 1}   -0.00{col 46}{space 3}0.998{col 54}{space 4}-.0095521{col 67}{space 3} .0095263
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2}  .142377{col 26}{space 2} .0252933{col 37}{space 1}    5.63{col 46}{space 3}0.000{col 54}{space 4}  .092803{col 67}{space 3} .1919511
+{txt}{space 6}female {c |}{col 14}{res}{space 2} .0032117{col 26}{space 2} .0189543{col 37}{space 1}    0.17{col 46}{space 3}0.865{col 54}{space 4}-.0339379{col 67}{space 3} .0403614
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2}-.1024979{col 26}{space 2} .0161731{col 37}{space 1}   -6.34{col 46}{space 3}0.000{col 54}{space 4}-.1341966{col 67}{space 3}-.0707991
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2}-.0440541{col 26}{space 2}  .008244{col 37}{space 1}   -5.34{col 46}{space 3}0.000{col 54}{space 4} -.060212{col 67}{space 3}-.0278962
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .1679602{col 26}{space 2} .1437818{col 37}{space 1}    1.17{col 46}{space 3}0.243{col 54}{space 4}-.1138469{col 67}{space 3} .4497672
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}/lndelta {c |}{col 14}{res}{space 2}-.0878883{col 26}{space 2} .0620801{col 54}{space 4} -.209563{col 67}{space 3} .0337864
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       delta {c |}{col 14}{res}{space 2} .9158632{col 26}{space 2} .0568568{col 54}{space 4} .8109386{col 67}{space 3} 1.034364
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+LR test of delta=0: {help j_chibar##|_new:chibar2(01) = }{res}585.09{col 56}{txt}Prob >= chibar2 = {res}0.000
+{txt}
+{com}. 
+. 
+. *Negative binomial 2
+. nbreg etot able7 ctratio loginc female oldsib yngsib, d(m)
+
+{txt}Fitting Poisson model:
+{res}
+{txt}Iteration 0:{space 3}log likelihood = {res:-9160.3543}  
+Iteration 1:{space 3}log likelihood = {res:-9160.3384}  
+Iteration 2:{space 3}log likelihood = {res:-9160.3384}  
+{res}
+{txt}Fitting constant-only model:
+{res}
+{txt}Iteration 0:{space 3}log likelihood = {res:-9893.5054}  
+Iteration 1:{space 3}log likelihood = {res: -9384.026}  
+Iteration 2:{space 3}log likelihood = {res:-9383.2337}  
+Iteration 3:{space 3}log likelihood = {res:-9383.2332}  
+{res}
+{txt}Fitting full model:
+{res}
+{txt}Iteration 0:{space 3}log likelihood = {res:-9045.0264}  
+Iteration 1:{space 3}log likelihood = {res:-8980.3582}  
+Iteration 2:{space 3}log likelihood = {res:-8976.9463}  
+Iteration 3:{space 3}log likelihood = {res:-8976.9412}  
+Iteration 4:{space 3}log likelihood = {res:-8976.9412}  
+{res}
+{txt}Negative binomial regression{col 49}Number of obs{col 67}= {res}     3,423
+{txt}{col 49}LR chi2({res}6{txt}){col 67}= {res}    812.58
+{txt}{col 1}Dispersion{col 16}= {res}mean{txt}{col 49}Prob > chi2{col 67}= {res}    0.0000
+{txt}Log likelihood = {res}-8976.9412{txt}{col 49}Pseudo R2{col 67}= {res}    0.0433
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}        etot{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      z{col 46}   P>|z|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}able7 {c |}{col 14}{res}{space 2} .0138213{col 26}{space 2} .0005174{col 37}{space 1}   26.71{col 46}{space 3}0.000{col 54}{space 4} .0128073{col 67}{space 3} .0148354
+{txt}{space 5}ctratio {c |}{col 14}{res}{space 2} .0008885{col 26}{space 2} .0049278{col 37}{space 1}    0.18{col 46}{space 3}0.857{col 54}{space 4}-.0087698{col 67}{space 3} .0105468
+{txt}{space 6}loginc {c |}{col 14}{res}{space 2} .1384375{col 26}{space 2} .0243226{col 37}{space 1}    5.69{col 46}{space 3}0.000{col 54}{space 4} .0907661{col 67}{space 3}  .186109
+{txt}{space 6}female {c |}{col 14}{res}{space 2} -.007857{col 26}{space 2} .0186627{col 37}{space 1}   -0.42{col 46}{space 3}0.674{col 54}{space 4}-.0444352{col 67}{space 3} .0287211
+{txt}{space 6}oldsib {c |}{col 14}{res}{space 2}-.0989658{col 26}{space 2}  .015292{col 37}{space 1}   -6.47{col 46}{space 3}0.000{col 54}{space 4}-.1289376{col 67}{space 3} -.068994
+{txt}{space 6}yngsib {c |}{col 14}{res}{space 2}-.0403758{col 26}{space 2} .0078203{col 37}{space 1}   -5.16{col 46}{space 3}0.000{col 54}{space 4}-.0557033{col 67}{space 3}-.0250484
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2} .2917255{col 26}{space 2} .1397331{col 37}{space 1}    2.09{col 46}{space 3}0.037{col 54}{space 4} .0178537{col 67}{space 3} .5655973
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 4}/lnalpha {c |}{col 14}{res}{space 2}-2.070043{col 26}{space 2} .0737648{col 54}{space 4}-2.214619{col 67}{space 3}-1.925467
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+       alpha {c |}{col 14}{res}{space 2} .1261804{col 26}{space 2} .0093077{col 54}{space 4} .1091951{col 67}{space 3} .1458077
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+LR test of alpha=0: {help j_chibar##|_new:chibar2(01) = }{res}366.79{col 56}{txt}Prob >= chibar2 = {res}0.000
+{txt}
+{com}. 
+. *store results of our programm
+. *est store REG1
+. *est table REG1, se
+. 
+. *esttab REG1
+. 
+. *alternative
+. outreg2 using C:\Users\Meilis\Desktop\Peres_HA1\results_prelim.xls
+{txt}{browse `"C:\Users\Meilis\Desktop\Peres_HA1\results_prelim.xls"'}
+{browse `"C:\Users\Meilis\Desktop\Peres_HA1"' :dir}{com} : {txt}{stata `"seeout using "C:\Users\Meilis\Desktop\Peres_HA1\results_prelim.txt""':seeout}
+
+{com}. 
+{txt}end of do-file
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\Meilis\Desktop\Peres_HA1\log_HA.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}13 Apr 2021, 20:36:49
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
