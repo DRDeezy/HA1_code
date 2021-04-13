@@ -68,4 +68,4 @@ nbreg etot able7 ctratio loginc female oldsib yngsib, d(m)
 *esttab REG1
 
 *alternative
-outreg2 using C:\Users\Meilis\Desktop\Peres_HA1\results_prelim.xls
+*outreg2 using C:\Users\Meilis\Desktop\Peres_HA1\results_prelim.xls
